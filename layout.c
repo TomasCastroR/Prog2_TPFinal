@@ -24,6 +24,7 @@ int determinar_inicializacion(FILE *archivo){
 
     return (obsRandom>(((dimension*dimension)-obsFijos-2)/2));
 }
+
 /*inicializarLaberinto: char** int int
 Recibe un laberinto, su dimension y la condicion de seteo.
 Si la condicion es 1, inicializa todas las casillas en '1'.Sino, en '0'*/
@@ -55,7 +56,7 @@ un caracter que representa espacio no ocupado por otro objeto.
 Devuelve 1 si la posicion esta dentro del laberinto y no es una posicion ya ocupada,
 en caso contrario 0*/
 int verificar(int posX, int posY, int dimension, char **laberinto, char caracter){
-    return (posX>0 && posY>0)&&(posX<=dimension&&posY<=dimension)&&(laberinto[posX-1][posY-1]==caracter);
+    return (posX>0 && posY>0) && (posX<=dimension&&posY<=dimension) && (laberinto[posX-1][posY-1]==caracter);
 }
 
 /*obstaculosRandom: char** int int int int char*
@@ -106,40 +107,40 @@ int layoutLaberinto (FILE *archivo, char **laberinto, int dimension, int condici
     int validez=1,cantObsFijos=0,fila,columna,obsRandom;
     char caminoLibre = condicion +'0',paredFija = condicion + '1',buffer[LARGO_BUFFER];
 
-    fgets(buffer,LARGO_BUFFER,archivo);
-    while(fgetc(archivo) == '('&&validez==1){
-        fscanf(archivo,"%d,%d)\n",&fila,&columna);
+    fscanf (archivo, "%[^\n]\n", buffer);
+    while(fgetc(archivo) == '(' && validez == 1){
+        fscanf(archivo,"%d,%d)\n", &fila, &columna);
         if(verificar(fila,columna,dimension,laberinto,caminoLibre)){
             laberinto[fila-1][columna-1]= paredFija;
             cantObsFijos++;
         }
-        else validez=0;
+        else validez = 0;
     }
     if (validez){
-        fgets(buffer,LARGO_BUFFER,archivo);
+        fscanf (archivo, "%[^\n]\n", buffer);
         fscanf(archivo,"%d\n",&obsRandom);
-        if(obsRandom>((dimension*dimension)-cantObsFijos-2))validez=0;
+        if(obsRandom>((dimension*dimension)-cantObsFijos-2))
+            validez = 0;
         else{
-            fgets(buffer,LARGO_BUFFER,archivo);
-            fscanf(archivo,"(%d,%d)\n",&fila,&columna);
-            if(verificar(fila,columna,dimension,laberinto,caminoLibre)){
+            fscanf (archivo, "%[^\n]\n", buffer);
+            fscanf(archivo,"(%d,%d)\n", &fila, &columna);
+            if(verificar(fila, columna, dimension, laberinto, caminoLibre))
                 laberinto[fila-1][columna-1]='I';
-                }
-            else validez=0;
+            else validez = 0;
             if(validez){
-                fgets(buffer,LARGO_BUFFER,archivo);
-                fscanf(archivo,"(%d,%d)\n",&fila,&columna);
-                if(verificar(fila,columna,dimension,laberinto,caminoLibre)){
-                laberinto[fila-1][columna-1]='X';}
-                else validez=0;
+                fscanf (archivo, "%[^\n]\n", buffer);
+                fscanf(archivo,"(%d,%d)\n", &fila, &columna);
+                if(verificar(fila, columna, dimension, laberinto, caminoLibre))
+                    laberinto[fila-1][columna-1]='X';
+                else validez = 0;
                 if(validez){
                     obstaculosRandom(laberinto,dimension,condicion,obsRandom,cantObsFijos,randomSeed);
                     if(condicion){
-                        int paredesCambiadas=0;
-                        for(int i=0;i<dimension&&paredesCambiadas<cantObsFijos;i++){
-                            for(int j=0;j<dimension&&paredesCambiadas<cantObsFijos;j++){
+                        int paredesCambiadas = 0;
+                        for(int i = 0; i < dimension && paredesCambiadas < cantObsFijos; i++){
+                            for(int j = 0; j < dimension && paredesCambiadas < cantObsFijos; j++){
                                 if(laberinto[i][j]=='2'){
-                                    laberinto[i][j]='1';
+                                    laberinto[i][j] = '1';
                                     paredesCambiadas++;
                                 }
                             }
@@ -157,25 +158,24 @@ int layoutLaberinto (FILE *archivo, char **laberinto, int dimension, int condici
 Recibe un laberinto, su dimension y el nombre del archivo de salida.
 Escribe en el archivo el laberinto fila por fila*/
 void escritura (char **laberinto, int dimension, char *fileSalida){
-    FILE *archivoSalida = fopen(fileSalida,"w");
-    for(int i = 0;i < dimension; ++i)
-        fprintf(archivoSalida,"%s\n",laberinto[i]);
+    FILE *archivoSalida = fopen(fileSalida, "w");
+    for(int i = 0; i < dimension; ++i)
+        fprintf(archivoSalida,"%s\n", laberinto[i]);
     fclose(archivoSalida);
 }
 
 int main (int argc,char *argv[]) {
     if (argc != 4) {
-        FILE *entrada = fopen(argv[1],"r");
-        int condicion;
-        condicion = determinar_inicializacion(entrada);
+        FILE *entrada = fopen(argv[1], "r");
+        int condicion = determinar_inicializacion(entrada);
         rewind(entrada);
         int dimension;
         char buffer[LARGO_BUFFER];
 
         fscanf (entrada, "%[^\n]\n", buffer);
-        fscanf(entrada,"%d\n",&dimension);
+        fscanf(entrada,"%d\n", &dimension);
         char **laberinto = malloc(sizeof(char*)*dimension);
-        inicializar_laberinto(laberinto,dimension,condicion);
+        inicializar_laberinto(laberinto, dimension, condicion);
 
         if(layoutLaberinto(entrada, laberinto, dimension, condicion, argv[3])){
             escritura(laberinto, dimension, argv[2]);
@@ -188,5 +188,5 @@ int main (int argc,char *argv[]) {
         }
         return 0;
     }
-    return -1;
+    return EXIT_FAILURE;
 }
