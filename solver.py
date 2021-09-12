@@ -69,14 +69,13 @@ def limites (x, y, dimension):
 # Dado un laberinto, un nodo, el objetivo y el tamaño del laberinto,
 # devuelve una lista con los nodos adyacentes al nodo de entrada 
 # que no sean una pared y no hayan sido visitados ordenados por la distancia al objetivo
-def explorar(laberinto,nodo,objetivo,dimension):
+def explorar(laberinto,nodo,objetivo,dimension, vertical = [1,0,-1,0], horizontal = [0,1,0,-1]):
     adyacentes = []
-    for despX in range(-1,2):
-        for despY in range(-1,2):
-            x = nodo[0] + despX
-            y = nodo[1] + despY
-            if limites(x, y, dimension) and laberinto[x][y]!="1" and laberinto[x][y]!="-1":
-                adyacentes.append((x,y))
+    for i in range(0,4):
+        x = nodo[0] + horizontal[i]
+        y = nodo[1] + vertical[i]
+        if limites(x, y, dimension) and laberinto[x][y]!="1" and laberinto[x][y]!="-1":
+            adyacentes.append((x,y))
     ordenar_distancia(adyacentes,objetivo)
     return adyacentes
 
