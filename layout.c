@@ -97,6 +97,18 @@ void obstaculosRandom(char **laberinto, int dimension, int condicion, int cantOb
     }
 }
 
+void cambiar_paredes_fijas(char **laberinto, int dimension, int cantObsFijos) {
+    int paredesCambiadas = 0;
+    for(int i = 0; i < dimension && paredesCambiadas < cantObsFijos; i++){
+        for(int j = 0; j < dimension && paredesCambiadas < cantObsFijos; j++){
+            if(laberinto[i][j]=='2'){
+                laberinto[i][j] = '1';
+                paredesCambiadas++;
+            }
+        }
+    }
+}
+
 /*layoutLaberinto: FILE* char** int int char* -> bool
 Recibe un archivo, un laberinto ya inicializado, la condicion en la que se inicializo,
 su dimension y un numero en un array char.
@@ -105,13 +117,13 @@ la salida y el objetivo. Siempre verificando que los datos en la entrada sean va
 En caso de no serlos, devuelve 0. Sino, 1*/
 int layoutLaberinto (FILE *archivo, char **laberinto, int dimension, int condicion, char *randomSeed){
     int validez = 1, cantObsFijos = 0, fila, columna, obsRandom;
-    char caminoLibre = condicion +'0',paredFija = condicion + '1', buffer[LARGO_BUFFER];
+    char caminoLibre = condicion +'0', paredFija = condicion + '1', buffer[LARGO_BUFFER];
 
     fscanf (archivo, "%[^\n]\n", buffer);
     while(fgetc(archivo) == '(' && validez == 1){
         fscanf(archivo,"%d,%d)\n", &fila, &columna);
         if(verificar(fila,columna,dimension,laberinto,caminoLibre)){
-            laberinto[fila-1][columna-1]= paredFija;
+            laberinto[fila-1][columna-1] = paredFija;
             cantObsFijos++;
         }
         else validez = 0;
@@ -135,17 +147,8 @@ int layoutLaberinto (FILE *archivo, char **laberinto, int dimension, int condici
                 else validez = 0;
                 if(validez){
                     obstaculosRandom(laberinto, dimension, condicion, obsRandom, cantObsFijos, randomSeed);
-                    if(condicion){
-                        int paredesCambiadas = 0;
-                        for(int i = 0; i < dimension && paredesCambiadas < cantObsFijos; i++){
-                            for(int j = 0; j < dimension && paredesCambiadas < cantObsFijos; j++){
-                                if(laberinto[i][j]=='2'){
-                                    laberinto[i][j] = '1';
-                                    paredesCambiadas++;
-                                }
-                            }
-                        }
-                    }
+                    if(condicion)
+                        cambiar_paredes_fijas(laberinto, dimension, cantObsFijos);
                 }
             }
         }
