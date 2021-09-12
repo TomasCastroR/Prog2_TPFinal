@@ -65,32 +65,33 @@ la cantidad de objetos fijos puestos y un numero en un array char para la seedra
 Si la condicion es 1, coloca '0' (caminos libres)
 Si la condicion es 0, coloca '1 (paredes)'*/
 void obstaculosRandom(char **laberinto, int dimension, int condicion, int cantObsRandom, int cantObsFijos, char *randomSeed){
-    int filaRandom,columnaRandom;
+    int filaRandom, colRandom;
     char posDisponible = condicion +'0';
     srand(atoi(randomSeed));
+    
     if(condicion){
-        int caminosPuestos=0,caminos_a_poner=((dimension*dimension)-cantObsFijos-2)-cantObsRandom;
-        while(caminosPuestos<caminos_a_poner){
+        int caminosPuestos = 0, caminosAPoner=((dimension*dimension)-cantObsFijos-2)-cantObsRandom;
+        while(caminosPuestos < caminosAPoner){
             filaRandom = rand()%dimension;
-            columnaRandom = rand()%dimension;
-            while(laberinto[filaRandom][columnaRandom]!= posDisponible){
+            colRandom = rand()%dimension;
+            while(laberinto[filaRandom][colRandom] != posDisponible){
                 filaRandom = rand()%dimension;
-                columnaRandom = rand()%dimension;
+                colRandom = rand()%dimension;
             }
-            laberinto[filaRandom][columnaRandom]= '0';
+            laberinto[filaRandom][colRandom]= '0';
             caminosPuestos++;
         }
     }
     else{
         int obsRandomPuestos=0;
-        while(obsRandomPuestos<cantObsRandom){
+        while(obsRandomPuestos < cantObsRandom){
             filaRandom = rand()%dimension;
-            columnaRandom = rand()%dimension;
-            while(laberinto[filaRandom][columnaRandom]!= posDisponible){
+            colRandom = rand()%dimension;
+            while(laberinto[filaRandom][colRandom] != posDisponible){
                 filaRandom = rand()%dimension;
-                columnaRandom = rand()%dimension;
+                colRandom = rand()%dimension;
             }
-            laberinto[filaRandom][columnaRandom]= '1';
+            laberinto[filaRandom][colRandom]= '1';
             obsRandomPuestos++;
 
         }
