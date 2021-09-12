@@ -1,6 +1,6 @@
 import subprocess
 import argparse
-from math import sqrt
+from math import abs
 import random
 """ Diseño de datos:
     Representaremos un laberinto como una lista de listas (una matriz) donde cada lista representa
@@ -48,14 +48,14 @@ def encontrar(laberinto,dimension):
 def distancia(nodo,objetivo):
     return sqrt((objetivo[0]-nodo[0])**2 + (objetivo[1]-nodo[1])**2)
 
-# ordenarPorDistancia: List[Tupla(int)] Tupla(int)
+# ordenar_distancia: List[Tupla(int)] Tupla(int)
 # Dada una lista de nodos y el objetivo, ordena la lista en base a la distancia
 # al objetivo de cada nodo de mayor a menor
-def ordenarPorDistancia(listaNodos,objetivo):
+def ordenar_distancia(listaNodos,objetivo):
     listaDistancia = []
     for nodo in listaNodos:
-        Dist = distancia(nodo,objetivo)
-        listaDistancia.append((nodo[0],nodo[1],Dist))
+        dist = distancia(nodo,objetivo)
+        listaDistancia.append((nodo[0],nodo[1], dist))
         
     listaNodos.clear()
     listaDistancia.sort(key=lambda tupla: tupla[2],reverse=True)
@@ -67,24 +67,24 @@ def ordenarPorDistancia(listaNodos,objetivo):
 # devuelve una lista con los nodos adyacentes al nodo de entrada 
 # que no sean una pared y no hayan sido visitados ordenados por la distancia al objetivo
 def explorar(laberinto,nodo,objetivo,dimension):
-    DicV = [1,0,-1,0]
-    DicH = [0,1,0,-1]
-    Adyacentes = []
+    vertical = [1,0,-1,0]
+    horizontal = [0,1,0,-1]
+    adyacentes = []
     for index in range(0,4):
-        X = nodo[0] + DicV[index]
-        Y = nodo[1] + DicH[index]
+        X = nodo[0] + vertical[index]
+        Y = nodo[1] + horizontal[index]
         if X>=0 and Y>=0 and X<dimension and Y<dimension and laberinto[X][Y]!="1" and laberinto[X][Y]!="-1":
-            Adyacentes.append((X,Y))
-    ordenarPorDistancia(Adyacentes,objetivo)
-    return Adyacentes
+            adyacentes.append((X,Y))
+    ordenar_distancia(adyacentes,objetivo)
+    return adyacentes
 
-# resolverLaberinto: List[List[string]] Tupla(int) Tupla(int) int -> List[Tupla(int)]
+# resolver_laberinto: List[List[string]] Tupla(int) Tupla(int) int -> List[Tupla(int)]
 # Recibe un laberinto, el inicio, el objetivo, y la dimension del laberinto,
 # devuelve una lista de nodos en secuencia que representan una solucion del laberinto
-def resolverLaberinto(laberinto,inicio,objetivo,dimension):
+def resolver_laberinto(laberinto,inicio,objetivo,dimension):
     stack = []
     stack.append([inicio])
-    Solucion = []
+    solucion = []
     llegarObjetivo = False
     while(not llegarObjetivo and stack):
         path = stack.pop(-1)
@@ -97,14 +97,14 @@ def resolverLaberinto(laberinto,inicio,objetivo,dimension):
                 stack.append(newPath)
                 if laberinto[nodoVecino[0]][nodoVecino[1]]=="X":
                     llegarObjetivo = True
-                    Solucion = newPath
-    return Solucion
+                    solucion = newPath
+    return solucion
 
-# imprimirSolucion: List[Tupla(int)]
+# escrbir_solucion: List[Tupla(int)]
 # Recibe una solucion del laberinto, escribe la secuencia de nodos en un archivo
-def imprimirSolucion(Solucion,archivoSolucion):
+def escrbir_solucion(solucion,archivoSolucion):
     salida = open(archivoSolucion,"w")
-    for pasos in Solucion:
+    for pasos in solucion:
         salida.write("({0},{1})\n".format(pasos[0]+1,pasos[1]+1))
     salida.close()
 
@@ -136,11 +136,13 @@ def main():
         laberinto = leer_laberinto (args.laberinto)
         dimension = len(laberinto)
         inicio_fin = encontrar(laberinto,dimension)
-        recorrido = resolverLaberinto(laberinto,inicio_fin[0],inicio_fin[1],dimension)
+        recorrido = resolver_laberinto(laberinto,inicio_fin[0],inicio_fin[1],dimension)
         while(recorrido == []):
             randomSeed = str(random.randrange(1000000000))
             ejecutar = subprocess.run([args.ejecutableC, args.entrada, args.laberinto, randomSeed])
             laberinto = leer_laberinto (args.laberinto)
-            recorrido = resolverLaberinto(laberinto,inicio_fin[0],inicio_fin[1],dimension)
-        imprimirSolucion(recorrido, args.solucion)
-main()
+            recorrido = resolver_laberinto(laberinto,inicio_fin[0],inicio_fin[1],dimension)
+        escrbir_solucion(recorrido, args.solucion)
+
+if __name__ == "__main__":
+    main()
