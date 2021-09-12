@@ -104,8 +104,8 @@ A medida que lee el archivo, coloca los obstaculos fijos, que segun la condicion
 la salida y el objetivo. Siempre verificando que los datos en la entrada sean validos.
 En caso de no serlos, devuelve 0. Sino, 1*/
 int layoutLaberinto (FILE *archivo, char **laberinto, int dimension, int condicion, char *randomSeed){
-    int validez=1,cantObsFijos=0,fila,columna,obsRandom;
-    char caminoLibre = condicion +'0',paredFija = condicion + '1',buffer[LARGO_BUFFER];
+    int validez = 1, cantObsFijos = 0, fila, columna, obsRandom;
+    char caminoLibre = condicion +'0',paredFija = condicion + '1', buffer[LARGO_BUFFER];
 
     fscanf (archivo, "%[^\n]\n", buffer);
     while(fgetc(archivo) == '(' && validez == 1){
@@ -118,23 +118,23 @@ int layoutLaberinto (FILE *archivo, char **laberinto, int dimension, int condici
     }
     if (validez){
         fscanf (archivo, "%[^\n]\n", buffer);
-        fscanf(archivo,"%d\n",&obsRandom);
-        if(obsRandom>((dimension*dimension)-cantObsFijos-2))
+        fscanf(archivo,"%d\n", &obsRandom);
+        if(obsRandom > ((dimension*dimension)-cantObsFijos-2))
             validez = 0;
         else{
             fscanf (archivo, "%[^\n]\n", buffer);
             fscanf(archivo,"(%d,%d)\n", &fila, &columna);
             if(verificar(fila, columna, dimension, laberinto, caminoLibre))
-                laberinto[fila-1][columna-1]='I';
+                laberinto[fila-1][columna-1] = 'I';
             else validez = 0;
             if(validez){
                 fscanf (archivo, "%[^\n]\n", buffer);
                 fscanf(archivo,"(%d,%d)\n", &fila, &columna);
                 if(verificar(fila, columna, dimension, laberinto, caminoLibre))
-                    laberinto[fila-1][columna-1]='X';
+                    laberinto[fila-1][columna-1] = 'X';
                 else validez = 0;
                 if(validez){
-                    obstaculosRandom(laberinto,dimension,condicion,obsRandom,cantObsFijos,randomSeed);
+                    obstaculosRandom(laberinto, dimension, condicion, obsRandom, cantObsFijos, randomSeed);
                     if(condicion){
                         int paredesCambiadas = 0;
                         for(int i = 0; i < dimension && paredesCambiadas < cantObsFijos; i++){
