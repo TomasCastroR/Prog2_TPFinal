@@ -5,45 +5,50 @@
 
 //Largo del buffer donde almacena la informacion innecesaria
 #define LARGO_BUFFER 100
-/*determinarInicializacion: FILE* -> Bool
+
+/*determinar_inicializacion: FILE* -> Bool
 Recibe un archivo con el formato de entrada, si la cantidad de obstaculos random es mayor
 a la mitad de casillas disponibles devuelve 1, sino 0*/
-int determinarInicializacion(FILE *archivo){
+int determinar_inicializacion(FILE *archivo){
     char buffer[LARGO_BUFFER];
-    int dimension,obsFijos=0,obsRandom;
+    int dimension, obsFijos = 0, obsRandom;
+
     fscanf(archivo,"%s\n%d\n",buffer,&dimension);
     fgets(buffer,LARGO_BUFFER,archivo);
     while(fgetc(archivo)=='('){
-        fgets(buffer,LARGO_BUFFER,archivo);
+        fscanf (archivo, "%[^\n]\n", buffer);
         obsFijos++;
     }
-    fgets(buffer,LARGO_BUFFER,archivo);
+    fscanf (archivo, "%[^\n]\n", buffer);
     fscanf(archivo,"%d\n",&obsRandom);
+    
     return (obsRandom>(((dimension*dimension)-obsFijos-2)/2));
 }
 /*inicializarLaberinto: char** int int
 Recibe un laberinto, su dimension y la condicion de seteo.
 Si la condicion es 1, inicializa todas las casillas en '1'.Sino, en '0'*/
-void inicializarLaberinto (char **laberinto,int dimension,int condicion){
+void inicializar_laberinto (char **laberinto,int dimension,int condicion){
     char caracter = condicion +'0';
-    for(int i=0;i<dimension;++i){
-        laberinto[i]=malloc(sizeof(char)*(dimension+1));
-        laberinto[0][i]= caracter;
+    for(int i = 0; i<dimension; ++i){
+        laberinto[i] = malloc(sizeof(char)*(dimension+1));
+        laberinto[0][i] = caracter;
     }
     laberinto[0][dimension]='\0';
-    for(int i=1; i<dimension;++i){
+    for(int i = 1; i < dimension; ++i){
         strcpy(laberinto[i],laberinto[0]);
     }
 }
-/*inicializarLaberinto: char** int
+
+/*liberar_memoria: char** int
 Recibe una matriz char y su tamaño, libera el espacio de memoria de cada
 puntero en la matriz, luego libera la matriz*/
 void liberarMemoria (char **array,int dimension){
-    for(int i=0;i<dimension;++i){
+    for(int i = 0;i < dimension; ++i){
         free(array[i]);
     }
     free(array);
 }
+
 /*verificar: int int int char** char -> bool
 Recibe una numero de fila, un numero de columna, un laberinto, su tamaño y
 un caracter que representa espacio no ocupado por otro objeto.
@@ -52,6 +57,7 @@ en caso contrario 0*/
 int verificar(int posX, int posY,int dimension, char **laberinto,char caracter){
     return (posX>0 && posY>0)&&(posX<=dimension&&posY<=dimension)&&(laberinto[posX-1][posY-1]==caracter);
 }
+
 /*obstaculosRandom: char** int int int int char*
 Recibe un laberinto, su dimension, la condicion de seteo, la cantidad de obstaculos random a poner,
 la cantidad de objetos fijos puestos y un numero en un array char para la seedrand.
@@ -89,6 +95,7 @@ void obstaculosRandom(char **laberinto,int dimension,int condicion,int cantObsRa
         }
     }
 }
+
 /*layoutLaberinto: FILE* char** int int char* -> bool
 Recibe un archivo, un laberinto ya inicializado, la condicion en la que se inicializo,
 su dimension y un numero en un array char.
@@ -145,6 +152,7 @@ int layoutLaberinto (FILE *archivo,char **laberinto,int dimension,int condicion,
     fclose(archivo);
     return validez;
 }
+
 /*escritura: char** int char*
 Recibe un laberinto, su dimension y el nombre del archivo de salida.
 Escribe en el archivo el laberinto fila por fila*/
@@ -155,26 +163,31 @@ void escritura (char **laberinto,int dimension,char fileSalida[]){
     }
     fclose(archivoSalida);
 }
-int main (int Argc,char *argumentos[]){
-    FILE *Entrada = fopen(argumentos[1],"r");
-    int condicion;
-    condicion = determinarInicializacion(Entrada);
-    rewind(Entrada);
-    int dimension;
-    char buffer[LARGO_BUFFER];
 
-    fgets(buffer,LARGO_BUFFER,Entrada);
-    fscanf(Entrada,"%d\n",&dimension);
-    char **laberinto=(char**)malloc(sizeof(char*)*dimension);
-    inicializarLaberinto(laberinto,dimension,condicion);
-    if(layoutLaberinto(Entrada,laberinto,dimension,condicion,argumentos[3])){
-        escritura(laberinto,dimension,argumentos[2]);
-        liberarMemoria(laberinto,dimension);
-    }
-    else{
-        printf("La entrada no es valida\n");
-        liberarMemoria(laberinto,dimension);
-    }
+int main (int argc,char *argv[]) {
+    if (argc != 4) {
+        FILE *entrada = fopen(argv[1],"r");
+        int condicion;
+        condicion = determinar_inicializacion(entrada);
+        rewind(entrada);
+        int dimension;
+        char buffer[LARGO_BUFFER];
 
-    return 0;
+        fscanf (entrada, "%[^\n]\n", buffer);
+        fscanf(entrada,"%d\n",&dimension);
+        char **laberinto=(char**)malloc(sizeof(char*)*dimension);
+        inicializar_laberinto(laberinto,dimension,condicion);
+
+        if(layoutLaberinto(entrada,laberinto,dimension,condicion,argv[3])){
+            escritura(laberinto,dimension,argv[2]);
+            liberarMemoria(laberinto,dimension);
+        }
+        else{
+            printf("La entrada no es valida\n");
+            liberarMemoria(laberinto,dimension);
+            return EXIT_FAILURE;
+        }
+        return 0;
+    }
+    return -1;
 }
