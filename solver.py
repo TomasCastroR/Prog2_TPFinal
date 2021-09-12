@@ -1,4 +1,5 @@
 import subprocess
+import argparse
 from math import sqrt
 import random
 """ Diseño de datos:
@@ -101,12 +102,28 @@ def imprimirSolucion(Solucion,archivoSolucion):
     salida.close()
 
 def main():
-    archivoEntradaC = "entrada.txt"
-    archivoLaberinto = "salida.txt"
-    archivoSalida = "solucion.txt"
-    ejecutableDeC = "./a.exe"
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument (
+        "ejecutableC",
+        help = "Archivo ejecutable para generar el laberinto"
+    )
+    parser.add_argument (
+        "entrada",
+        help = "Archivo con la informacion para crear el laberinto" 
+    )
+    parser.add (
+        "laberinto",
+        help = "Archivo del laberinto"
+    )
+    parser.add_argument (
+        "solucion",
+        help = "Nombre del archivo con la solucion del laberinto"
+    )
+    args = parser.parse_args()
+
     randomSeed = str(random.randrange(1000000000))
-    ejecutar = subprocess.run([ejecutableDeC,archivoEntradaC,archivoLaberinto,randomSeed])
+    ejecutar = subprocess.run([args.ejecutableC, args.entrada, args.laberinto, randomSeed])
     #Pregunta si se genero la salida, en caso que sea False significa que la entrada no era valida
     if(ejecutar.returncode == 0):
         Entrada = open(ejecutar.args[2],"r")
@@ -117,10 +134,10 @@ def main():
         recorrido = resolverLaberinto(laberinto,inicio_fin[0],inicio_fin[1],dimension)
         while(recorrido == []):
             randomSeed = str(random.randrange(1000000000))
-            ejecutar = subprocess.run([ejecutableDeC,archivoEntradaC,archivoLaberinto,randomSeed])
+            ejecutar = subprocess.run([args.ejecutableC, args.entrada, args.laberinto, randomSeed])
             Entrada = open(ejecutar.args[2],"r")
             laberinto =list(map(lambda linea:list(linea.strip()),Entrada.readlines()))
             Entrada.close()
             recorrido = resolverLaberinto(laberinto,inicio_fin[0],inicio_fin[1],dimension)
-        imprimirSolucion(recorrido,archivoSalida)
+        imprimirSolucion(recorrido, args.solucion)
 main()
