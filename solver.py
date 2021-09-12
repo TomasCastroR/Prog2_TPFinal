@@ -62,19 +62,21 @@ def ordenar_distancia(listaNodos,objetivo):
     for nodo in listaDistancia:
         listaNodos.append((nodo[0],nodo[1]))
 
+def limites (x, y, dimension):
+    return x>=0 and y>=0 and x<dimension and y<dimension
+
 # explorar: List[List[string]] Tupla(int) Tupla(int) int -> List[Tupla(int)]
 # Dado un laberinto, un nodo, el objetivo y el tamaño del laberinto,
 # devuelve una lista con los nodos adyacentes al nodo de entrada 
 # que no sean una pared y no hayan sido visitados ordenados por la distancia al objetivo
 def explorar(laberinto,nodo,objetivo,dimension):
-    vertical = [1,0,-1,0]
-    horizontal = [0,1,0,-1]
     adyacentes = []
-    for index in range(0,4):
-        X = nodo[0] + vertical[index]
-        Y = nodo[1] + horizontal[index]
-        if X>=0 and Y>=0 and X<dimension and Y<dimension and laberinto[X][Y]!="1" and laberinto[X][Y]!="-1":
-            adyacentes.append((X,Y))
+    for despX in range(-1,2):
+        for despY in range(-1,2):
+            x = nodo[0] + despX
+            y = nodo[1] + despY
+            if limites(x, y, dimension) and laberinto[x][y]!="1" and laberinto[x][y]!="-1":
+                adyacentes.append((x,y))
     ordenar_distancia(adyacentes,objetivo)
     return adyacentes
 
