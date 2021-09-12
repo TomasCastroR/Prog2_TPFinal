@@ -68,7 +68,7 @@ void obstaculosRandom(char **laberinto, int dimension, int condicion, int cantOb
     int filaRandom, colRandom;
     char posDisponible = condicion +'0';
     srand(atoi(randomSeed));
-    
+
     if(condicion){
         int caminosPuestos = 0, caminosAPoner=((dimension*dimension)-cantObsFijos-2)-cantObsRandom;
         while(caminosPuestos < caminosAPoner){
@@ -168,8 +168,8 @@ void escritura (char **laberinto, int dimension, char *fileSalida){
     fclose(archivoSalida);
 }
 
-int main (int argc,char *argv[]) {
-    if (argc != 4) {
+int main (int argc, char *argv[]) {
+    if (argc == 4) {
         FILE *entrada = fopen(argv[1], "r");
         int condicion = determinar_inicializacion(entrada);
         rewind(entrada);
