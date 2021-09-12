@@ -43,7 +43,7 @@ void inicializar_laberinto (char **laberinto, int dimension, int condicion){
 /*liberar_memoria: char** int
 Recibe una matriz char y su tamaño, libera el espacio de memoria de cada
 puntero en la matriz, luego libera la matriz*/
-void liberarMemoria (char **array, int dimension){
+void liberar_memoria (char **array, int dimension){
     for(int i = 0;i < dimension; ++i){
         free(array[i]);
     }
@@ -59,12 +59,12 @@ int verificar(int posX, int posY, int dimension, char **laberinto, char caracter
     return (posX>0 && posY>0) && (posX<=dimension&&posY<=dimension) && (laberinto[posX-1][posY-1]==caracter);
 }
 
-/*obstaculosRandom: char** int int int int char*
+/*obstaculos_random: char** int int int int char*
 Recibe un laberinto, su dimension, la condicion de seteo, la cantidad de obstaculos random a poner,
 la cantidad de objetos fijos puestos y un numero en un array char para la seedrand.
 Si la condicion es 1, coloca '0' (caminos libres)
 Si la condicion es 0, coloca '1 (paredes)'*/
-void obstaculosRandom(char **laberinto, int dimension, int condicion, int cantObsRandom, int cantObsFijos, char *randomSeed){
+void obstaculos_random(char **laberinto, int dimension, int condicion, int cantObsRandom, int cantObsFijos, char *randomSeed){
     int filaRandom, colRandom;
     char posDisponible = condicion +'0';
     srand(atoi(randomSeed));
@@ -110,13 +110,13 @@ void cambiar_paredes_fijas(char **laberinto, int dimension, int cantObsFijos) {
     }
 }
 
-/*layoutLaberinto: FILE* char** int int char* -> bool
+/*generar_laberinto: FILE* char** int int char* -> bool
 Recibe un archivo, un laberinto ya inicializado, la condicion en la que se inicializo,
 su dimension y un numero en un array char.
 A medida que lee el archivo, coloca los obstaculos fijos, que segun la condicion colocara '1' o '2' respectivamente,
 la salida y el objetivo. Siempre verificando que los datos en la entrada sean validos.
 En caso de no serlos, devuelve 0. Sino, 1*/
-int layoutLaberinto (FILE *archivo, char **laberinto, int dimension, int condicion, char *randomSeed){
+int generar_laberinto (FILE *archivo, char **laberinto, int dimension, int condicion, char *randomSeed){
     int validez = 1, cantObsFijos = 0, fila, columna, obsRandom;
     char caminoLibre = condicion +'0', paredFija = condicion + '1', buffer[LARGO_BUFFER];
 
@@ -147,7 +147,7 @@ int layoutLaberinto (FILE *archivo, char **laberinto, int dimension, int condici
                     laberinto[fila-1][columna-1] = 'X';
                 else validez = 0;
                 if(validez){
-                    obstaculosRandom(laberinto, dimension, condicion, obsRandom, cantObsFijos, randomSeed);
+                    obstaculos_random(laberinto, dimension, condicion, obsRandom, cantObsFijos, randomSeed);
                     if(condicion)
                         cambiar_paredes_fijas(laberinto, dimension, cantObsFijos);
                 }
@@ -181,13 +181,13 @@ int main (int argc, char *argv[]) {
         char **laberinto = malloc(sizeof(char*)*dimension);
         inicializar_laberinto(laberinto, dimension, condicion);
 
-        if(layoutLaberinto(entrada, laberinto, dimension, condicion, argv[3])){
+        if(generar_laberinto(entrada, laberinto, dimension, condicion, argv[3])){
             escritura(laberinto, dimension, argv[2]);
-            liberarMemoria(laberinto, dimension);
+            liberar_memoria(laberinto, dimension);
         }
         else{
             printf("La entrada no es valida\n");
-            liberarMemoria(laberinto, dimension);
+            liberar_memoria(laberinto, dimension);
             return EXIT_FAILURE;
         }
         return 0;
