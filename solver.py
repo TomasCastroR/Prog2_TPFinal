@@ -46,7 +46,7 @@ def encontrar(laberinto,dimension):
 # distancia: Tupla(int) Tupla(int) -> int
 # Dado un nodo del laberinto y el objetivo, devuelve la distancia entre ellos
 def distancia(nodo,objetivo):
-    return sqrt((objetivo[0]-nodo[0])**2 + (objetivo[1]-nodo[1])**2)
+    return abs(objetivo[0]-nodo[0]) + abs(objetivo[1]-nodo[1])
 
 # ordenar_distancia: List[Tupla(int)] Tupla(int)
 # Dada una lista de nodos y el objetivo, ordena la lista en base a la distancia
