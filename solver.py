@@ -16,6 +16,13 @@ import random
     
     En caso que el laberinto no tenga solucion, se generan laberintos hasta que alguno tenga solucion."""
 
+def leer_laberinto (nombreArchivo):
+    lab = open(nombreArchivo,"r")
+    laberinto =list(map(lambda linea:list(linea.strip()),lab.readlines()))
+    lab.close()
+
+    return laberinto
+
 # encontrar: List[List[string]] int -> Tupla(Tupla(int))
 # Recibe un laberinto y su tamaño, devuelve en forma de tupla, las tuplas con las coordenadas
 # de la salida y el objetivo respectivamente
@@ -126,18 +133,14 @@ def main():
     ejecutar = subprocess.run([args.ejecutableC, args.entrada, args.laberinto, randomSeed])
     #Pregunta si se genero la salida, en caso que sea False significa que la entrada no era valida
     if(ejecutar.returncode == 0):
-        Entrada = open(ejecutar.args[2],"r")
-        laberinto =list(map(lambda linea:list(linea.strip()),Entrada.readlines()))
-        Entrada.close()
+        laberinto = leer_laberinto (args.laberinto)
         dimension = len(laberinto)
         inicio_fin = encontrar(laberinto,dimension)
         recorrido = resolverLaberinto(laberinto,inicio_fin[0],inicio_fin[1],dimension)
         while(recorrido == []):
             randomSeed = str(random.randrange(1000000000))
             ejecutar = subprocess.run([args.ejecutableC, args.entrada, args.laberinto, randomSeed])
-            Entrada = open(ejecutar.args[2],"r")
-            laberinto =list(map(lambda linea:list(linea.strip()),Entrada.readlines()))
-            Entrada.close()
+            laberinto = leer_laberinto (args.laberinto)
             recorrido = resolverLaberinto(laberinto,inicio_fin[0],inicio_fin[1],dimension)
         imprimirSolucion(recorrido, args.solucion)
 main()
