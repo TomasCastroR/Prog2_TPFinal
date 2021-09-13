@@ -69,7 +69,7 @@ def explorar(laberinto,nodo,objetivo,dimension, vertical = [1,0,-1,0], horizonta
     for i in range(0,4):
         x = nodo[0] + horizontal[i]
         y = nodo[1] + vertical[i]
-        if limites(x, y, dimension) and laberinto[x][y]!="1" and laberinto[x][y]!="-1":
+        if limites(x, y, dimension) and laberinto[x][y] != "1" and laberinto[x][y] != "-1":
             adyacentes.append((x,y))
     ordenar_distancia(adyacentes,objetivo)
     return adyacentes
@@ -85,13 +85,13 @@ def resolver_laberinto(laberinto,inicio,objetivo,dimension):
     while(not llegarObjetivo and stack):
         path = stack.pop(-1)
         nodo = path[-1]
-        if laberinto[nodo[0]][nodo[1]]!="-1":
-            laberinto[nodo[0]][nodo[1]]="-1"
+        if laberinto[nodo[0]][nodo[1]] != "-1":
+            laberinto[nodo[0]][nodo[1]] = "-1"
             vecinos = explorar(laberinto,nodo,objetivo,dimension)
             for nodoVecino in vecinos:
                 newPath = path + [nodoVecino]
                 stack.append(newPath)
-                if laberinto[nodoVecino[0]][nodoVecino[1]]=="X":
+                if laberinto[nodoVecino[0]][nodoVecino[1]] == "X":
                     llegarObjetivo = True
                     solucion = newPath
     return solucion
