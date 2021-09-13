@@ -20,13 +20,10 @@ def leer_laberinto (nombreArchivo):
     with open(nombreArchivo,"r") as file:
         filas = file.readlines()
     laberinto = []
-    inicio = fin = (0,0)
-
     x,y = 0,0
     for fila in filas:
         fila = list(fila)
-        fila.pop(-1)
-        laberinto.append(fila)
+        laberinto.append(fila[:-1])
         for casilla in fila:
             if casilla == 'I':
                 inicio = (x, y)
@@ -35,7 +32,6 @@ def leer_laberinto (nombreArchivo):
             y += 1
         x += 1
         y = 0  
-
     return laberinto, inicio, fin, x
 
 # distancia: Tupla(int) Tupla(int) -> int
