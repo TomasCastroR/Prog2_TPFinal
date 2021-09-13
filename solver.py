@@ -17,31 +17,26 @@ import random
     En caso que el laberinto no tenga solucion, se generan laberintos hasta que alguno tenga solucion."""
 
 def leer_laberinto (nombreArchivo):
-    lab = open(nombreArchivo,"r")
-    laberinto =list(map(lambda linea:list(linea.strip()),lab.readlines()))
-    lab.close()
+    file = open(nombreArchivo,"r")
+    filas = file.readlines()
+    file.close()
+    laberinto = []
+    inicio = fin = (0,0)
 
-    return laberinto
+    x,y = 0,0
+    for fila in filas:
+        fila.pop(-1)
+        laberinto.append(fila)
+        for casilla in fila:
+            if casilla == 'I':
+                inicio = (x, y)
+            if casilla == 'X':
+                fin = (x, y)
+            y += 1
+        x += 1
+        y = 0  
 
-# encontrar: List[List[string]] int -> Tupla(Tupla(int))
-# Recibe un laberinto y su tamaño, devuelve en forma de tupla, las tuplas con las coordenadas
-# de la salida y el objetivo respectivamente
-def encontrar(laberinto,dimension):
-    fila = 0
-    columna = 0
-    encontrado = 0
-    while(fila<dimension and encontrado<2):
-        while(columna<dimension and encontrado<2):
-            if(laberinto[fila][columna]=="I"):
-                inicio = (fila,columna)
-                encontrado +=1
-            if(laberinto[fila][columna]=="X"):
-                final = (fila,columna)
-                encontrado +=1
-            columna+=1
-        columna = 0
-        fila+=1
-    return (inicio,final)
+    return laberinto, inicio, fin, x
 
 # distancia: Tupla(int) Tupla(int) -> int
 # Dado un nodo del laberinto y el objetivo, devuelve la distancia entre ellos
@@ -134,15 +129,13 @@ def main():
     ejecutar = subprocess.run([args.ejecutableC, args.entrada, args.laberinto, randomSeed])
     #Pregunta si se genero la salida, en caso que sea False significa que la entrada no era valida
     if(ejecutar.returncode == 0):
-        laberinto = leer_laberinto (args.laberinto)
-        dimension = len(laberinto)
-        inicio_fin = encontrar(laberinto,dimension)
-        recorrido = resolver_laberinto(laberinto,inicio_fin[0],inicio_fin[1],dimension)
+        laberinto, inicio, objetivo, dimension = leer_laberinto (args.laberinto)
+        recorrido = resolver_laberinto(laberinto, inicio, objetivo, dimension)
         while(recorrido == []):
             randomSeed = str(random.randrange(1000000000))
             ejecutar = subprocess.run([args.ejecutableC, args.entrada, args.laberinto, randomSeed])
             laberinto = leer_laberinto (args.laberinto)
-            recorrido = resolver_laberinto(laberinto,inicio_fin[0],inicio_fin[1],dimension)
+            recorrido = resolver_laberinto(laberinto, inicio, objetivo, dimension)
         escrbir_solucion(recorrido, args.solucion)
 
 if __name__ == "__main__":
