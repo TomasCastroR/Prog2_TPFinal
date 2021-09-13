@@ -1,7 +1,6 @@
-import subprocess
+from subprocess import run
 import argparse
-from math import abs
-import random
+from random import randrange
 """ Diseño de datos:
     Representaremos un laberinto como una lista de listas (una matriz) donde cada lista representa
     una fila y la posicion en esa lista, la columna. Lo que se encuentra en cada casilla del laberinto se representa
@@ -25,6 +24,7 @@ def leer_laberinto (nombreArchivo):
 
     x,y = 0,0
     for fila in filas:
+        fila = list(fila)
         fila.pop(-1)
         laberinto.append(fila)
         for casilla in fila:
@@ -115,7 +115,7 @@ def main():
         "entrada",
         help = "Archivo con la informacion para crear el laberinto" 
     )
-    parser.add (
+    parser.add_argument (
         "laberinto",
         help = "Archivo del laberinto"
     )
@@ -125,15 +125,16 @@ def main():
     )
     args = parser.parse_args()
 
-    randomSeed = str(random.randrange(1000000000))
-    ejecutar = subprocess.run([args.ejecutableC, args.entrada, args.laberinto, randomSeed])
+    randomSeed = str(randrange(1000000000))
+    ejecutable = "./" + args.ejecutableC
+    ejecutar = run([ejecutable, args.entrada, args.laberinto, randomSeed])
     #Pregunta si se genero la salida, en caso que sea False significa que la entrada no era valida
     if(ejecutar.returncode == 0):
         laberinto, inicio, objetivo, dimension = leer_laberinto (args.laberinto)
         recorrido = resolver_laberinto(laberinto, inicio, objetivo, dimension)
         while(recorrido == []):
-            randomSeed = str(random.randrange(1000000000))
-            ejecutar = subprocess.run([args.ejecutableC, args.entrada, args.laberinto, randomSeed])
+            randomSeed = str(randrange(1000000000))
+            ejecutar = run([ejecutable, args.entrada, args.laberinto, randomSeed])
             laberinto = leer_laberinto (args.laberinto)
             recorrido = resolver_laberinto(laberinto, inicio, objetivo, dimension)
         escrbir_solucion(recorrido, args.solucion)
