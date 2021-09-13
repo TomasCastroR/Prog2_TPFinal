@@ -17,9 +17,8 @@ from random import randrange
     En caso que el laberinto no tenga solucion, se generan laberintos hasta que alguno tenga solucion."""
 
 def leer_laberinto (nombreArchivo):
-    file = open(nombreArchivo,"r")
-    filas = file.readlines()
-    file.close()
+    with open(nombreArchivo,"r") as file:
+        filas = file.readlines()
     laberinto = []
     inicio = fin = (0,0)
 
@@ -100,10 +99,9 @@ def resolver_laberinto(laberinto,inicio,objetivo,dimension):
 # escrbir_solucion: List[Tupla(int)]
 # Recibe una solucion del laberinto, escribe la secuencia de nodos en un archivo
 def escrbir_solucion(solucion,archivoSolucion):
-    salida = open(archivoSolucion,"w")
-    for pasos in solucion:
-        salida.write(f"({pasos[0]+1},{pasos[1]+1})\n")
-    salida.close()
+    with open(archivoSolucion,"w") as salida:
+        for pasos in solucion:
+            salida.write(f"({pasos[0]+1},{pasos[1]+1})\n")
 
 def main():
     parser = argparse.ArgumentParser()
