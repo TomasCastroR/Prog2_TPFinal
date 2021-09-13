@@ -117,51 +117,50 @@ A medida que lee el archivo, coloca los obstaculos fijos, que segun la condicion
 la salida y el objetivo. Siempre verificando que los datos en la entrada sean validos.
 En caso de no serlos, devuelve 0. Sino, 1*/
 int generar_laberinto (FILE *archivo, char **laberinto, int dimension, int condicion, char *randomSeed){
-    int validez = 1, cantObsFijos = 0, fila, columna, obsRandom;
+    int entradaValida = 1, cantObsFijos = 0, fila, columna, obsRandom;
     char caminoLibre = condicion +'0', paredFija = condicion + '1', buffer[LARGO_BUFFER];
 
     fscanf (archivo, "%[^\n]\n", buffer);
-    while(fgetc(archivo) == '(' && validez == 1){
+    while(fgetc(archivo) == '(' && entradaValida){
         fscanf(archivo,"%d,%d)\n", &fila, &columna);
         if(verificar(fila,columna,dimension,laberinto,caminoLibre)){
             laberinto[fila-1][columna-1] = paredFija;
             cantObsFijos++;
         }
-        else validez = 0;
+        else entradaValida = 0;
     }
-    if (validez){
+    if (entradaValida){
         fscanf (archivo, "%[^\n]\n", buffer);
         fscanf(archivo,"%d\n", &obsRandom);
-        if(obsRandom > ((dimension*dimension)-cantObsFijos-2))
-            validez = 0;
-        else{
+        if(!(obsRandom > ((dimension*dimension)-cantObsFijos-2))) {
             fscanf (archivo, "%[^\n]\n", buffer);
             fscanf(archivo,"(%d,%d)\n", &fila, &columna);
             if(verificar(fila, columna, dimension, laberinto, caminoLibre))
                 laberinto[fila-1][columna-1] = 'I';
-            else validez = 0;
-            if(validez){
+            else entradaValida = 0;
+            if(entradaValida){
                 fscanf (archivo, "%[^\n]\n", buffer);
                 fscanf(archivo,"(%d,%d)\n", &fila, &columna);
                 if(verificar(fila, columna, dimension, laberinto, caminoLibre))
                     laberinto[fila-1][columna-1] = 'X';
-                else validez = 0;
-                if(validez){
+                else entradaValida = 0;
+                if(entradaValida){
                     obstaculos_random(laberinto, dimension, condicion, obsRandom, cantObsFijos, randomSeed);
                     if(condicion)
                         cambiar_paredes_fijas(laberinto, dimension, cantObsFijos);
                 }
             }
         }
+        else entradaValida = 0;
     }
     fclose(archivo);
-    return validez;
+    return entradaValida;
 }
 
-/*escritura: char** int char*
+/*escribir_laberinto: char** int char*
 Recibe un laberinto, su dimension y el nombre del archivo de salida.
 Escribe en el archivo el laberinto fila por fila*/
-void escritura (char **laberinto, int dimension, char *fileSalida){
+void escribir_laberinto (char **laberinto, int dimension, char *fileSalida){
     FILE *archivoSalida = fopen(fileSalida, "w");
     for(int i = 0; i < dimension; ++i)
         fprintf(archivoSalida,"%s\n", laberinto[i]);
@@ -182,7 +181,7 @@ int main (int argc, char *argv[]) {
         inicializar_laberinto(laberinto, dimension, condicion);
 
         if(generar_laberinto(entrada, laberinto, dimension, condicion, argv[3])){
-            escritura(laberinto, dimension, argv[2]);
+            escribir_laberinto(laberinto, dimension, argv[2]);
             liberar_memoria(laberinto, dimension);
         }
         else{
@@ -190,7 +189,7 @@ int main (int argc, char *argv[]) {
             liberar_memoria(laberinto, dimension);
             return EXIT_FAILURE;
         }
-        return 0;
+        return EXIT_SUCCESS;
     }
     return EXIT_FAILURE;
 }
