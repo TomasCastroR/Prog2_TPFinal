@@ -1,4 +1,5 @@
 from subprocess import run
+from sys import maxsize
 import argparse
 from random import randrange
 """ Diseño de datos:
@@ -50,12 +51,12 @@ def ordenar_distancia(listaNodos,objetivo):
     listaDistancia = []
     for nodo in listaNodos:
         dist = distancia(nodo,objetivo)
-        listaDistancia.append((nodo[0],nodo[1], dist))
+        listaDistancia.append((nodo, dist))
         
     listaNodos.clear()
-    listaDistancia.sort(key=lambda tupla: tupla[2],reverse=True)
-    for nodo in listaDistancia:
-        listaNodos.append((nodo[0],nodo[1]))
+    listaDistancia.sort(key=lambda tupla: tupla[1],reverse=True)
+    for (nodo, _) in listaDistancia:
+        listaNodos.append(nodo)
 
 def limites (x, y, dimension):
     return x>=0 and y>=0 and x<dimension and y<dimension
@@ -101,7 +102,7 @@ def resolver_laberinto(laberinto,inicio,objetivo,dimension):
 def escrbir_solucion(solucion,archivoSolucion):
     salida = open(archivoSolucion,"w")
     for pasos in solucion:
-        salida.write("({0},{1})\n".format(pasos[0]+1,pasos[1]+1))
+        salida.write(f"({pasos[0]+1},{pasos[1]+1})\n")
     salida.close()
 
 def main():
@@ -125,7 +126,7 @@ def main():
     )
     args = parser.parse_args()
 
-    randomSeed = str(randrange(1000000000))
+    randomSeed = str(randrange(maxsize))
     ejecutable = "./" + args.ejecutableC
     ejecutar = run([ejecutable, args.entrada, args.laberinto, randomSeed])
     #Pregunta si se genero la salida, en caso que sea False significa que la entrada no era valida
@@ -133,7 +134,7 @@ def main():
         laberinto, inicio, objetivo, dimension = leer_laberinto (args.laberinto)
         recorrido = resolver_laberinto(laberinto, inicio, objetivo, dimension)
         while(recorrido == []):
-            randomSeed = str(randrange(1000000000))
+            randomSeed = str(randrange(maxsize))
             ejecutar = run([ejecutable, args.entrada, args.laberinto, randomSeed])
             laberinto = leer_laberinto (args.laberinto)
             recorrido = resolver_laberinto(laberinto, inicio, objetivo, dimension)
