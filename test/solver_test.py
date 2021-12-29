@@ -1,4 +1,6 @@
-from ResolverLaberinto import *
+import sys
+sys.path.append("../")
+from solver import distancia, ordenar_distancia, limites
 
 # El archivo de ejemplo posee una lista de 2 elemementos por linea
 # los cuales el primero es el laberinto y el segundo la dimension
