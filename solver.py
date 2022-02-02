@@ -20,19 +20,15 @@ def leer_laberinto (nombreArchivo):
     with open(nombreArchivo,"r") as file:
         filas = file.readlines()
     laberinto = []
-    x,y = 0,0
-    for fila in filas:
+    for r, fila in enumerate(filas):
         fila = list(fila)
         laberinto.append(fila[:-1])
-        for casilla in fila:
+        for c, casilla in enumerate(fila):
             if casilla == 'I':
-                inicio = (x, y)
+                inicio = (r, c)
             if casilla == 'X':
-                fin = (x, y)
-            y += 1
-        x += 1
-        y = 0  
-    return laberinto, inicio, fin, x
+                fin = (r, c)
+    return laberinto, inicio, fin, len(laberinto)
 
 # distancia: Tupla(int) Tupla(int) -> int
 # Dado un nodo del laberinto y el objetivo, devuelve la distancia entre ellos
